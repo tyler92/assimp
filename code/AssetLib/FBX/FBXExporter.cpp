@@ -721,7 +721,7 @@ void FBXExporter::WriteDefinitions ()
 
     // Model / FbxNode
     // <~~ node hierarchy
-    count = int32_t(count_nodes(mScene->mRootNode, mScene->mRootNode));
+    count = mScene->mRootNode ? int32_t(count_nodes(mScene->mRootNode, mScene->mRootNode)) : 0;
     if (count) {
         n = FBX::Node("ObjectType", "Model");
         n.AddChild("Count", count);
@@ -2055,7 +2055,9 @@ void FBXExporter::WriteObjects ()
                 std::vector<double> subdef_weights;
                 int32_t last_index = -1;
                 for (size_t wi = 0; wi < b->mNumWeights; ++wi) {
-                    int32_t vi = vertex_indices[b->mWeights[wi].mVertexId];
+                    auto xxx = b->mWeights[wi].mVertexId;
+                    if (xxx >= vertex_indices.size()) continue;
+                    int32_t vi = vertex_indices[xxx];
                     bool bIsWeightedAlready = (setWeightedVertex.find(vi) != setWeightedVertex.end());
                     if (vi == last_index || bIsWeightedAlready) {
                         // only for vertices we exported to fbx
@@ -2278,9 +2280,9 @@ void FBXExporter::WriteObjects ()
 
     // write nodes (i.e. model hierarchy)
     // start at root node
-    WriteModelNodes(
-        outstream, mScene->mRootNode, 0, limbnodes
-    );
+    if (mScene->mRootNode) {
+        WriteModelNodes(outstream, mScene->mRootNode, 0, limbnodes);
+    }
 
     // animations
     //

@@ -1052,7 +1052,9 @@ void SceneCombiner::CopyScene(aiScene **_dest, const aiScene *src, bool allocate
             dest->mNumMeshes);
 
     // now - copy the root node of the scene (deep copy, too)
-    Copy(&dest->mRootNode, src->mRootNode);
+    if (src->mRootNode != nullptr) {
+        Copy(&dest->mRootNode, src->mRootNode);
+    }
 
     // and keep the flags ...
     dest->mFlags = src->mFlags;
